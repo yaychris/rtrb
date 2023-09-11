@@ -1,5 +1,3 @@
-require 'tuple'
-
 describe Tuple do
   describe '#new' do
     subject { Tuple.new(4.3, -4.2, 3.1, 1.0) }
