@@ -55,7 +55,7 @@ class PPMWriter
   end
 
   def dimensions
-    "#{canvas.width} #{canvas.height}"
+    "#{canvas.width.to_i} #{canvas.height.to_i}"
   end
 
   def max_color
