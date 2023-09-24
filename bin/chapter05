@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
+
+require 'bundler/setup'
+require 'rt'
+
+camera = Point(0, 0, -5)
+
+wall_z = 10.0
+wall_size = 8.0
+half_wall = wall_size / 2.0
+
+canvas_pixels = 800.0
+canvas = Canvas.new(canvas_pixels, canvas_pixels)
+
+pixel_size = wall_size / canvas_pixels
+
+RED = Color.new(1.0, 0.0, 0.0)
+
+sphere = Sphere.new
+
+canvas.each do |x, y|
+  world_x = half_wall - pixel_size * x
+  world_y = half_wall - pixel_size * y
+
+  wall_position = Point(world_x, world_y, wall_z)
+  ray = Ray.new(camera, (wall_position - camera).normalize)
+
+  xs = sphere.intersect(ray)
+
+  if xs.hit
+    canvas[x, y] = RED
+  end
+end
+
+writer = PPMWriter.new(canvas)
+
+File.open('chapter05.ppm', 'w') do |f|
+  f.write(writer.write)
+end

@@ -9,7 +9,7 @@ describe Canvas do
       expect(subject.width).to be(10)
       expect(subject.height).to be(20)
 
-      subject.each do |color, _, _|
+      subject.each do |_, _, color|
         expect(color).to eq(black)
       end
     end

@@ -35,7 +35,7 @@ class Canvas
   def each
     rows do |row, y|
       row.each_with_index do |color, x|
-        yield color, x, y
+        yield x, y, color
       end
     end
   end

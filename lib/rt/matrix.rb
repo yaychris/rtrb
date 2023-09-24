@@ -1,6 +1,15 @@
 class Matrix
   attr_reader :data
 
+  def self.zero
+    Matrix.new([
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ])
+  end
+
   def self.identity
     Matrix.new([
       [1, 0, 0, 0],

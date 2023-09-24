@@ -47,6 +47,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
     rspec-support (3.12.1)
+    ruby-prof (1.6.3)
     shellany (0.0.1)
     thor (1.2.2)
 
@@ -55,7 +56,9 @@ PLATFORMS
 
 DEPENDENCIES
   guard-rspec
+  pry
   rspec
+  ruby-prof
 
 BUNDLED WITH
    2.4.19

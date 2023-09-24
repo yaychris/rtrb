@@ -44,7 +44,7 @@ END
       canvas = Canvas.new(10, 2)
       subject = PPMWriter.new(canvas)
 
-      canvas.each do |_, x, y|
+      canvas.each do |x, y|
         canvas[x, y] = Color.new(1, 0.8, 0.6)
       end
 

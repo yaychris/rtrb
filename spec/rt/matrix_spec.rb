@@ -268,7 +268,6 @@ describe Matrix do
     end
   end
 
-
   describe '#transpose' do
     describe 'non-identity matrix' do
       subject do
