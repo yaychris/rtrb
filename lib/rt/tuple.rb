@@ -65,6 +65,10 @@ class Tuple
       @x * rh.y - @y * rh.x
     )
   end
+
+  def to_fixed
+    Tuple.new(x.to_fixed, y.to_fixed, z.to_fixed, w.to_fixed)
+  end
 end
 
 def Point(x, y, z)

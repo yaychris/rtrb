@@ -97,4 +97,10 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
+
+  RSpec::Matchers.define :fixed_eq do |expected|
+    match do |actual|
+      expect(expected.to_fixed).to eq(actual.to_fixed)
+    end
+  end
 end

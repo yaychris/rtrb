@@ -261,7 +261,7 @@ describe Matrix do
       let(:tuple) { Tuple.new(1, 2, 3, 1) }
 
       it 'returns the correct tuple' do
-        result = Matrix.new([[18], [24], [33], [1]])
+        result = Tuple.new(18, 24, 33, 1)
 
         expect(subject * tuple).to eq(result)
       end
@@ -492,17 +492,17 @@ describe Matrix do
       end
 
       it 'returns the inverse' do
-        inverse = subject.inverse.to_fixed
+        inverse = subject.inverse
 
         expect(subject.determinant).to eq(532)
 
         expect(subject.cofactor(2, 3)).to eq(-160)
-        expect(inverse[3, 2]).to eq(result[3, 2])
+        expect(inverse[3, 2]).to fixed_eq(result[3, 2])
 
         expect(subject.cofactor(3, 2)).to eq(105)
-        expect(inverse[2, 3]).to eq(result[2, 3])
+        expect(inverse[2, 3]).to fixed_eq(result[2, 3])
 
-        expect(inverse).to eq(result)
+        expect(inverse).to fixed_eq(result)
       end
     end
 
@@ -526,9 +526,9 @@ describe Matrix do
       end
 
       it 'returns the inverse' do
-        inverse = subject.inverse.to_fixed
+        inverse = subject.inverse
 
-        expect(inverse).to eq(result)
+        expect(inverse).to fixed_eq(result)
       end
     end
 
@@ -552,9 +552,9 @@ describe Matrix do
       end
 
       it 'returns the inverse' do
-        inverse = subject.inverse.to_fixed
+        inverse = subject.inverse
 
-        expect(inverse).to eq(result)
+        expect(inverse).to fixed_eq(result)
       end
     end
 
@@ -582,9 +582,236 @@ describe Matrix do
 
         subject = c * b.inverse
 
-        subject.to_fixed.each do |val, row, col|
-          expect(val).to eq(a[row, col])
+        subject.each do |val, row, col|
+          expect(val).to fixed_eq(a[row, col])
         end
+      end
+    end
+  end
+
+  describe 'translation' do
+    describe 'Matrix.translation' do
+      subject do
+        Matrix.translation(5, -3, 2)
+      end
+
+      it 'returns a translation matrix' do
+        expect(subject).to eq(Matrix.new([
+          [1, 0, 0, 5],
+          [0, 1, 0, -3],
+          [0, 0, 1, 2],
+          [0, 0, 0, 1],
+        ]))
+      end
+    end
+
+    describe 'multiplying point by translation matrix' do
+      let(:m) { Matrix.translation(5, -3, 2) }
+      let(:p) { Point(-3, 4, 5) }
+
+      it 'moves the point' do
+        expect(m * p).to eq(Point(2, 1, 7))
+      end
+    end
+
+    describe 'multiplying point by inverse of translation matrix' do
+      let(:m) { Matrix.translation(5, -3, 2) }
+      let(:p) { Point(-3, 4, 5) }
+
+      it 'moves in the opposite direction' do
+        expect(m.inverse * p).to eq(Point(-8, 7, 3))
+      end
+    end
+
+    describe 'multiplying vector by translation matrix' do
+      let(:m) { Matrix.translation(5, -3, 2) }
+      let(:v) { Vector(-3, 4, 5) }
+
+      it 'does not change the vector' do
+        expect(m * v).to eq(v)
+      end
+    end
+  end
+
+  describe 'scaling' do
+    describe 'Matrix.scaling' do
+      subject { Matrix.scaling(2, 3, 4) }
+
+      it 'returns a scale matrix' do
+        expect(subject).to eq(Matrix.new([
+          [2, 0, 0, 0],
+          [0, 3, 0, 0],
+          [0, 0, 4, 0],
+          [0, 0, 0, 1],
+        ]))
+      end
+    end
+
+    describe 'multiplying point by scaling matrix' do
+      let(:m) { Matrix.scaling(2, 3, 4) }
+      let(:p) { Point(-4, 6, 8) }
+
+      it 'scales the point' do
+        expect(m * p).to eq(Point(-8, 18, 32))
+      end
+    end
+
+    describe 'multiplying vector by scaling matrix' do
+      let(:m) { Matrix.scaling(2, 3, 4) }
+      let(:v) { Vector(-4, 6, 8) }
+
+      it 'scales the vector' do
+        expect(m * v).to eq(Vector(-8, 18, 32))
+      end
+    end
+
+    describe 'multiplying vector by inverse scaling matrix' do
+      let(:m) { Matrix.scaling(2, 3, 4) }
+      let(:v) { Vector(-4, 6, 8) }
+
+      it 'scales the vector' do
+        expect(m.inverse * v).to eq(Vector(-2, 2, 2))
+      end
+    end
+
+    describe 'multiplying by a reflection matrix' do
+      let(:m) { Matrix.scaling(-1, 1, 1) }
+      let(:p) { Point(2, 3, 4) }
+
+      it 'reflects the point' do
+        expect(m * p).to eq(Point(-2, 3, 4))
+      end
+    end
+  end
+
+  describe 'rotating' do
+    let(:sqrt2) { Math.sqrt(2) }
+
+    describe 'rotating point around x' do
+      let(:half_quarter) { Matrix.rotation_x(Math::PI/4) }
+      let(:quarter) { Matrix.rotation_x(Math::PI/2) }
+      let(:p) { Point(0, 1, 0) }
+
+      it 'rotates correctly' do
+        result = half_quarter * p
+        expect(result).to fixed_eq(Point(0, sqrt2/2, sqrt2/2))
+
+        result = quarter * p
+        expect(result).to fixed_eq(Point(0, 0, 1))
+      end
+
+      it 'inverse matrix rotates the other way' do
+        result = half_quarter.inverse * p
+
+        expect(result).to fixed_eq(Point(0, sqrt2/2, -sqrt2/2))
+      end
+    end
+
+    describe 'rotating point around y' do
+      let(:half_quarter) { Matrix.rotation_y(Math::PI/4) }
+      let(:quarter) { Matrix.rotation_y(Math::PI/2) }
+      let(:p) { Point(0, 0, 1) }
+
+      it 'rotates correctly' do
+        result = half_quarter * p
+        expect(result).to fixed_eq(Point(sqrt2/2, 0, sqrt2/2))
+
+        result = quarter * p
+        expect(result).to fixed_eq(Point(1, 0, 0))
+      end
+    end
+
+    describe 'rotating point around z' do
+      let(:half_quarter) { Matrix.rotation_z(Math::PI/4) }
+      let(:quarter) { Matrix.rotation_z(Math::PI/2) }
+      let(:p) { Point(0, 1, 0) }
+
+      it 'rotates correctly' do
+        result = half_quarter * p
+        expect(result).to fixed_eq(Point(-sqrt2/2, sqrt2/2, 0))
+
+        result = quarter * p
+        expect(result).to fixed_eq(Point(-1, 0, 0))
+      end
+    end
+  end
+
+  describe 'shearing' do
+    let(:p) { Point(2, 3, 4) }
+
+    describe 'moving x in proportion to y' do
+      let(:m) { Matrix.shearing(1, 0, 0, 0, 0, 0) }
+
+      it 'moves the point' do
+        expect(m * (p)).to eq(Point(5, 3, 4))
+      end
+    end
+
+    describe 'moving x in proportion to z' do
+      let(:m) { Matrix.shearing(0, 1, 0, 0, 0, 0) }
+
+      it 'moves the point' do
+        expect(m * (p)).to eq(Point(6, 3, 4))
+      end
+    end
+
+    describe 'moving y in proportion to x' do
+      let(:m) { Matrix.shearing(0, 0, 1, 0, 0, 0) }
+
+      it 'moves the point' do
+        expect(m * (p)).to eq(Point(2, 5, 4))
+      end
+    end
+
+    describe 'moving y in proportion to z' do
+      let(:m) { Matrix.shearing(0, 0, 0, 1, 0, 0) }
+
+      it 'moves the point' do
+        expect(m * (p)).to eq(Point(2, 7, 4))
+      end
+    end
+
+    describe 'moving z in proportion to x' do
+      let(:m) { Matrix.shearing(0, 0, 0, 0, 1, 0) }
+
+      it 'moves the point' do
+        expect(m * (p)).to eq(Point(2, 3, 6))
+      end
+    end
+
+    describe 'moving z in proportion to y' do
+      let(:m) { Matrix.shearing(0, 0, 0, 0, 0, 1) }
+
+      it 'moves the point' do
+        expect(m * (p)).to eq(Point(2, 3, 7))
+      end
+    end
+  end
+
+  describe 'chaining transformations' do
+    let(:p) { Point(1, 0, 1) }
+    let(:a) { Matrix.rotation_x(Math::PI/2) }
+    let(:b) { Matrix.scaling(5, 5, 5) }
+    let(:c) { Matrix.translation(10, 5, 7) }
+
+    describe 'individual transformations' do
+      it 'transforms correctly' do
+        p2 = a * p
+        expect(p2).to fixed_eq(Point(1, -1, 0))
+
+        p3 = b * p2
+        expect(p3).to fixed_eq(Point(5, -5, 0))
+
+        p4 = c * p3
+        expect(p4).to fixed_eq(Point(15, 0, 7))
+      end
+    end
+
+    describe 'chained function calls' do
+      it 'transforms correctly' do
+        t = c * b * a
+
+        expect(t * p).to eq(Point(15, 0, 7))
       end
     end
   end

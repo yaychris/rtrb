@@ -1,21 +1,75 @@
 class Matrix
   attr_reader :data
 
-  def self.from_tuple(t)
-    new([
-      [t.x],
-      [t.y],
-      [t.z],
-      [t.w],
-    ])
-  end
-
   def self.identity
     Matrix.new([
       [1, 0, 0, 0],
       [0, 1, 0, 0],
       [0, 0, 1, 0],
       [0, 0, 0, 1],
+    ])
+  end
+
+  def self.translation(x, y, z)
+    Matrix.new([
+      [1, 0, 0, x],
+      [0, 1, 0, y],
+      [0, 0, 1, z],
+      [0, 0, 0, 1],
+    ])
+  end
+
+  def self.scaling(x, y, z)
+    Matrix.new([
+      [x, 0, 0, 0],
+      [0, y, 0, 0],
+      [0, 0, z, 0],
+      [0, 0, 0, 1],
+    ])
+  end
+
+  def self.rotation_x(rad)
+    Matrix.new([
+      [1, 0,             0,              0],
+      [0, Math.cos(rad), -Math.sin(rad), 0],
+      [0, Math.sin(rad), Math.cos(rad),  0],
+      [0, 0,             0,              1],
+    ])
+  end
+
+  def self.rotation_y(rad)
+    Matrix.new([
+      [Math.cos(rad),  0, Math.sin(rad), 0],
+      [0,              1, 0,             0],
+      [-Math.sin(rad), 0, Math.cos(rad), 0],
+      [0,              0, 0,             1],
+    ])
+  end
+
+  def self.rotation_z(rad)
+    Matrix.new([
+      [Math.cos(rad), -Math.sin(rad), 0, 0],
+      [Math.sin(rad), Math.cos(rad),  0, 0],
+      [0,             0,              1, 0],
+      [0,             0,              0, 1],
+    ])
+  end
+
+  def self.shearing(xy, xz, yx, yz, zx, zy)
+    Matrix.new([
+      [1,  xy, xz, 0],
+      [yx, 1,  yz, 0],
+      [zx, zy, 1,  0],
+      [0,  0,  0,  1],
+    ])
+  end
+
+  def self.from_tuple(t)
+    new([
+      [t.x],
+      [t.y],
+      [t.z],
+      [t.w],
     ])
   end
 
@@ -76,7 +130,9 @@ class Matrix
   end
 
   def *(rh)
-    rh = self.class.from_tuple(rh) if rh.is_a?(Tuple)
+    is_tuple = rh.is_a?(Tuple)
+
+    rh = self.class.from_tuple(rh) if is_tuple
 
     result = []
 
@@ -90,7 +146,11 @@ class Matrix
       result << new_row
     end
 
-    Matrix.new(result)
+    if is_tuple
+      Tuple.new(*result.flatten)
+    else
+      Matrix.new(result)
+    end
   end
 
   def transpose
