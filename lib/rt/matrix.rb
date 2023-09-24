@@ -145,15 +145,20 @@ class Matrix
 
     result = []
 
-    each_row do |row|
+    0.upto(num_rows - 1) do |row|
       new_row = []
 
-      rh.each_col do |col|
-        new_row << dot(row, col)
+      0.upto(rh.num_cols - 1) do |col|
+        new_row <<
+          self[row, 0] * rh[0, col] +
+          self[row, 1] * rh[1, col] +
+          self[row, 2] * rh[2, col] +
+          self[row, 3] * rh[3, col]
       end
 
       result << new_row
     end
+
 
     if is_tuple
       Tuple.new(*result.flatten)
@@ -171,12 +176,14 @@ class Matrix
   end
 
   def determinant
-    if num_rows == 2
-      return self[0, 0]*self[1, 1] - self[0, 1]*self[1,0]
-    end
+    return @determinant if instance_variable_defined?(:@determinant)
 
-    data[0].each_with_index.reduce(0) do |sum, (val, col_index)|
-      sum + val * cofactor(0, col_index)
+    @determinant = if num_rows == 2
+      self[0, 0]*self[1, 1] - self[0, 1]*self[1,0]
+    else
+      data[0].each_with_index.reduce(0) do |sum, (val, col_index)|
+        sum + val * cofactor(0, col_index)
+      end
     end
   end
 
@@ -209,6 +216,7 @@ class Matrix
   end
 
   def inverse
+    return @inverse if instance_variable_defined?(:@inverse)
     det = determinant
 
     result = Matrix.new(data)
@@ -221,7 +229,7 @@ class Matrix
       end
     end
 
-    result
+    @inverse = result
   end
 
   def to_fixed
