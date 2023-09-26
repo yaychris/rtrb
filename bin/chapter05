@@ -40,6 +40,8 @@ end
 # Write file
 writer = PPMWriter.new(canvas)
 
-File.open('chapter05.ppm', 'w') do |f|
+name = File.basename(__FILE__)
+
+File.open("#{name}.ppm", 'w') do |f|
   f.write(writer.write)
 end

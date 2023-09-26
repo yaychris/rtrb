@@ -1,5 +1,9 @@
 class IntersectionList < Array
+  def initialize(intersections = [])
+    super(intersections.sort_by(&:t))
+  end
+
   def hit
-    sort_by(&:t).reject { |i| i.t.negative? }.first
+    reject(&:negative?).first
   end
 end

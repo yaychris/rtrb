@@ -8,4 +8,12 @@ class Material
     @specular = 0.9
     @shininess = 200.0
   end
+
+  def ==(rh)
+    @color == rh.color and
+      @ambient == rh.ambient and
+      @diffuse == rh.diffuse and
+      @specular == rh.specular and
+      @shininess == rh.shininess
+  end
 end

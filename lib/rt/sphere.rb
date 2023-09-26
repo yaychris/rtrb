@@ -10,6 +10,13 @@ class Sphere
     @material = Material.new
   end
 
+  def ==(rh)
+    @origin == rh.origin and
+      @radius == rh.radius and
+      @transform == rh.transform and
+      @material == rh.material
+  end
+
   def intersect(ray)
     result = IntersectionList.new
 
