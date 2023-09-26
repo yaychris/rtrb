@@ -1,6 +1,14 @@
 class Color
   attr_reader :r, :g, :b
 
+  def self.black
+    Color.new(0, 0, 0)
+  end
+
+  def self.white
+    Color.new(1, 1, 1)
+  end
+
   def initialize(r, g, b)
     @r = Float(r)
     @g = Float(g)
@@ -46,6 +54,14 @@ class Color
     end
   end
 
+  def to_fixed
+    Color.new(r.to_fixed, g.to_fixed, b.to_fixed)
+  end
+
+  def inspect
+    "#<Color (#{[@r, @g, @b].join(", ")})>"
+  end
+
   def to_a
     [@r, @g, @b]
   end
@@ -54,5 +70,3 @@ class Color
     to_a.map { |x| (x * 255).round.clamp(0, 255) }
   end
 end
-
-Color::BLACK = Color.new(0, 0, 0)

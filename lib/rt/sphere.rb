@@ -1,12 +1,13 @@
 class Sphere
   attr_reader :origin, :radius
 
-  attr_accessor :transform
+  attr_accessor :transform, :material
 
   def initialize
     @origin = Point(0, 0, 0)
     @radius = 1.0
     @transform = Matrix.identity
+    @material = Material.new
   end
 
   def intersect(ray)
@@ -32,5 +33,17 @@ class Sphere
 
     result << Intersection.new(t1, self)
     result << Intersection.new(t2, self)
+  end
+
+  def normal_at(p)
+    inverse = transform.inverse
+
+    local_point = inverse * p
+    local_normal = local_point - Point(0, 0, 0)
+
+    normal = inverse.transpose * local_normal
+
+    normal.w = 0.0
+    normal.normalize
   end
 end

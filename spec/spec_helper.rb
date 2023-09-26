@@ -103,5 +103,12 @@ RSpec.configure do |config|
     match do |actual|
       expect(expected.to_fixed).to eq(actual.to_fixed)
     end
+
+    failure_message do |actual|
+      <<-END.chomp
+expected: #{expected.to_fixed.inspect}
+     got: #{actual.to_fixed.inspect}
+END
+    end
   end
 end

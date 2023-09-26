@@ -2,7 +2,7 @@
 
 $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 
-require 'bundler/setup'
+# require 'bundler/setup'
 require 'rt'
 
 # Camera setup
@@ -21,6 +21,11 @@ pixel_size = wall_size / canvas_pixels
 color = Color.new(1, 0.2, 1)
 
 sphere = Sphere.new
+sphere.material.color = color
+
+light_position = Point(-10, 10, -10)
+light_color = Color.white
+light = PointLight.new(light_position, light_color)
 
 # Render each pixel
 canvas.each do |x, y|
@@ -31,15 +36,20 @@ canvas.each do |x, y|
   ray = Ray.new(camera, (wall_position - camera).normalize)
 
   xs = sphere.intersect(ray)
+  hit = xs.hit
 
-  if xs.hit
-    canvas[x, y] = color
+  if hit
+    point = ray.position(hit.t)
+    normal = hit.object.normal_at(point)
+    eye = -ray.direction
+
+    canvas[x, y] = lighting(hit.object.material, light, point, eye, normal)
   end
 end
 
 # Write file
 writer = PPMWriter.new(canvas)
 
-File.open('chapter05.ppm', 'w') do |f|
+File.open('chapter06.ppm', 'w') do |f|
   f.write(writer.write)
 end

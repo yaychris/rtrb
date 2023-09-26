@@ -9,7 +9,7 @@
 class Canvas
   attr_reader :width, :height
 
-  def initialize(width, height, default_color: Color::BLACK)
+  def initialize(width, height, default_color: Color.black)
     @width = width
     @height = height
 

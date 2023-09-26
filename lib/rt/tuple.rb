@@ -1,5 +1,5 @@
 class Tuple
-  attr_reader :x, :y, :z, :w
+  attr_accessor :x, :y, :z, :w
 
   def initialize(x, y, z, w)
     @x = Float(x)
@@ -68,6 +68,14 @@ class Tuple
 
   def to_fixed
     Tuple.new(x.to_fixed, y.to_fixed, z.to_fixed, w.to_fixed)
+  end
+
+  def inspect
+    "#<Tuple (#{[@x, @y, @z, @w].join(", ")})>"
+  end
+
+  def reflect(normal)
+    self - normal * 2 * self.dot(normal)
   end
 end
 

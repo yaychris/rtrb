@@ -157,6 +157,29 @@ describe Tuple do
       expect(b.cross(a)).to eq(Vector(1, -2, 1))
     end
   end
+
+  describe '#reflect' do
+    context 'approaching at 45 degrees' do
+      let(:normal) { Vector(0, 1, 0) }
+
+      subject { Vector(1, -1, 0) }
+
+      it 'returns vector reflected about the normal' do
+        expect(subject.reflect(normal)).to fixed_eq(Vector(1, 1, 0))
+      end
+    end
+
+    context 'slanted surface' do
+      let(:sqrt2) { Math.sqrt(2) }
+      let(:normal) { Vector(sqrt2 / 2, sqrt2 / 2, 0) }
+
+      subject { Vector(0, -1, 0) }
+
+      it 'returns vector reflected about the normal' do
+        expect(subject.reflect(normal)).to fixed_eq(Vector(1, 0, 0))
+      end
+    end
+  end
 end
 
 describe 'Point' do

@@ -1,5 +1,5 @@
 describe Canvas do
-  let(:black) { Color::BLACK }
+  let(:black) { Color.black }
   let(:red)   { Color.new(1.0, 0, 0) }
 
   describe '#new' do
